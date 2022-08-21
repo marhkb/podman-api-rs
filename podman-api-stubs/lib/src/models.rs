@@ -2345,7 +2345,7 @@ pub struct Info {
     pub host: HostInfo,
     pub plugins: Plugins,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub registries: Option<HashMap<String, HashMap<String, Value>>>,
+    pub registries: Option<HashMap<String, Vec<String>>>,
     pub store: StoreInfo,
     pub version: Version,
 }
