@@ -4231,7 +4231,7 @@ pub struct ListContainer {
     /// Port mappings
     pub ports: Option<Vec<PortMapping>>,
     #[serde(rename = "Size")]
-    pub size: ContainerSize,
+    pub size: Option<ContainerSize>,
     #[serde(rename = "StartedAt")]
     #[serde(skip_serializing_if = "Option::is_none")]
     /// Time when container started
