@@ -2126,7 +2126,7 @@ pub struct ImageData {
     #[serde(rename = "GraphDriver")]
     pub graph_driver: DriverData,
     #[serde(rename = "Healthcheck")]
-    pub healthcheck: Schema2HealthConfig,
+    pub healthcheck: Option<Schema2HealthConfig>,
     #[serde(rename = "History")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub history: Option<Vec<History>>,
