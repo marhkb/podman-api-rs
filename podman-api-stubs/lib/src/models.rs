@@ -4093,8 +4093,8 @@ pub struct LinuxRdma {
 /// LinuxResources has container runtime resource constraints
 pub struct LinuxResources {
     #[serde(rename = "blockIO")]
-    pub block_io: LinuxBlockIo,
-    pub cpu: LinuxCpu,
+    pub block_io: Option<LinuxBlockIo>,
+    pub cpu: Option<LinuxCpu>,
     #[serde(skip_serializing_if = "Option::is_none")]
     /// Devices configures the device allowlist.
     pub devices: Option<Vec<LinuxDeviceCgroup>>,
@@ -4102,9 +4102,9 @@ pub struct LinuxResources {
     #[serde(skip_serializing_if = "Option::is_none")]
     /// Hugetlb limit (in bytes)
     pub hugepage_limits: Option<Vec<LinuxHugepageLimit>>,
-    pub memory: LinuxMemory,
-    pub network: LinuxNetwork,
-    pub pids: LinuxPids,
+    pub memory: Option<LinuxMemory>,
+    pub network: Option<LinuxNetwork>,
+    pub pids: Option<LinuxPids>,
     #[serde(skip_serializing_if = "Option::is_none")]
     /// Rdma resource restriction configuration.
     /// Limits are a set of key value pairs that define RDMA resource limits,
