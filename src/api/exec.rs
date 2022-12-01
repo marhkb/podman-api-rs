@@ -43,27 +43,30 @@ impl Exec {
     ///     }
     /// };
     /// ```
-    pub fn start<'exec>(
+    pub async fn start<'exec>(
         &'exec self,
         opts: &'exec opts::ExecStartOpts,
-    ) -> impl Stream<Item = crate::conn::Result<tty::TtyChunk>> + 'exec {
+    ) -> Result<tty::Multiplexer<'exec>>
+    {
         let ep = format!("/libpod/exec/{}/start", &self.id);
-        Box::pin(
-            async move {
-                let payload = Payload::Json(
-                    opts.serialize()
-                        .map_err(|e| crate::conn::Error::Any(Box::new(e)))?,
-                );
-                let stream = Box::pin(
-                    self.podman
-                        .post_stream(ep, payload, Headers::none())
-                        .map_err(|e| crate::conn::Error::Any(Box::new(e))),
-                );
 
-                Ok(tty::decode(stream))
-            }
-            .try_flatten_stream(),
-        )
+        let payload = Payload::Json(
+            opts.serialize()
+                .map_err(|e| crate::conn::Error::Any(Box::new(e)))?,
+        );
+        self.podman
+            .post_upgrade_stream(ep, payload)
+            .await
+            .map(|x| {
+                // When the container allocates a TTY the stream doesn't come in the standard
+                // Docker format but rather as a raw stream of bytes.
+                // TODO: Somehow retrieve opts.params.get("tty")
+                if true {
+                    tty::Multiplexer::new(x, tty::decode_raw)
+                } else {
+                    tty::Multiplexer::new(x, tty::decode_chunk)
+                }
+            })
     }}
 
     api_doc! {
@@ -137,6 +140,6 @@ impl Exec {
                 ("w", width.to_string()),
             ])),
         );
-        self.podman.get_json(&ep).await
+        self.podman.post(&ep, Payload::None::<&str>, Headers::none()).await.map(|_| ())
     }}
 }
